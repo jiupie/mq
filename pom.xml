@@ -13,6 +13,7 @@
         <module>rabbitmq-producter</module>
         <module>rabbitmq-consumer</module>
         <module>mq-common</module>
+        <module>rocketmq-demo</module>
     </modules>
 
     <dependencyManagement>
