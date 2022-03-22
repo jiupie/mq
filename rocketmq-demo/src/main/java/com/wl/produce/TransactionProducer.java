@@ -4,7 +4,6 @@ import org.apache.rocketmq.client.producer.TransactionListener;
 import org.apache.rocketmq.client.producer.TransactionMQProducer;
 import org.apache.rocketmq.common.message.Message;
 
-import java.lang.annotation.Target;
 import java.nio.charset.StandardCharsets;
 
 /**
