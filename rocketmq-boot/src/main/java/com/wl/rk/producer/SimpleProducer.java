@@ -1,6 +1,5 @@
 package com.wl.rk.producer;
 
-import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.stereotype.Component;
 

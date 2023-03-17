@@ -14,9 +14,9 @@ import java.util.List;
  * @author 南顾北衫
  * @email 17674641491@163.com
  */
-public class SimpleConsumer {
+public class SimpleConsumer2 {
     public static void main(String[] args) throws MQClientException {
-        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("cm-gp");
+        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("cm-gp3");
         consumer.setNamesrvAddr("127.0.0.1:9876");
         consumer.subscribe("simple-tp","*");
         consumer.setMessageModel(MessageModel.CLUSTERING);
