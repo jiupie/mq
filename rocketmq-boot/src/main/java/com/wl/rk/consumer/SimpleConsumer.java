@@ -2,6 +2,7 @@ package com.wl.rk.consumer;
 
 import com.wl.rk.entity.MqDedup;
 import com.wl.rk.mapper.MqDedupMapper;
+import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
@@ -24,7 +25,7 @@ public class SimpleConsumer implements RocketMQListener<MessageExt> {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void onMessage(MessageExt messageExt) {
-
+        //幂等性处理
         MqDedup mqDedup = new MqDedup();
         mqDedup.setStatus("0");
         mqDedup.setApplicationName("test");
@@ -40,5 +41,6 @@ public class SimpleConsumer implements RocketMQListener<MessageExt> {
 //        if ("test".equals(msgContent)) {
 //            throw new RuntimeException("消费错误");
 //        }
+
     }
 }
