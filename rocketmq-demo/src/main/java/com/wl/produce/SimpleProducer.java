@@ -22,7 +22,7 @@ public class SimpleProducer {
         defaultMQProducer.setSendMsgTimeout(6_000);
         defaultMQProducer.start();
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 5; i++) {
             Message message = new Message("simple-tp", ("hi," + i).getBytes(StandardCharsets.UTF_8));
             defaultMQProducer.send(message);
         }

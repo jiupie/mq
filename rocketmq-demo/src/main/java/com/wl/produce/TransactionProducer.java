@@ -21,10 +21,10 @@ public class TransactionProducer {
         defaultMQProducer.start();
         TransactionListener transactionListener = new MyTransactionListener();
         defaultMQProducer.setTransactionListener(transactionListener);
-        defaultMQProducer.send(new Message("tranction-tp", "tagA", "hi,transaction".getBytes(StandardCharsets.UTF_8)));
-        defaultMQProducer.send(new Message("tranction-tp", "tagB", "hi,transaction".getBytes(StandardCharsets.UTF_8)));
-        defaultMQProducer.send(new Message("tranction-tp", "tagC", "hi,transaction".getBytes(StandardCharsets.UTF_8)));
+        defaultMQProducer.sendMessageInTransaction(new Message("tranction-tp", "tagA", "hi,transaction".getBytes(StandardCharsets.UTF_8)),null);
+        defaultMQProducer.sendMessageInTransaction(new Message("tranction-tp", "tagB", "hi,transaction".getBytes(StandardCharsets.UTF_8)),null);
+        defaultMQProducer.sendMessageInTransaction(new Message("tranction-tp", "tagC", "hi,transaction".getBytes(StandardCharsets.UTF_8)),null);
 
-//        defaultMQProducer.shutdown();
+        defaultMQProducer.shutdown();
     }
 }

@@ -20,12 +20,17 @@ public class SimpleConsumer2 {
         consumer.setNamesrvAddr("127.0.0.1:9876");
         consumer.subscribe("simple-tp","*");
         consumer.setMessageModel(MessageModel.CLUSTERING);
+
+        //-1表示16次，如果消息在成功之前被重新消费超过maxReconsumeTimes，则将其重定向到等待删除的队列中。
+        consumer.setMaxReconsumeTimes(-1);
+
         //消息监听器
         consumer.registerMessageListener(new MessageListenerConcurrently() {
             @Override
             public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
                 System.out.println(msgs);
-                return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+                throw  new RuntimeException("error");
+//                return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
             }
         });
         consumer.start();
