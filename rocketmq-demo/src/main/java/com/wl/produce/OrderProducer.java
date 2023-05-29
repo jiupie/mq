@@ -1,11 +1,15 @@
 package com.wl.produce;
 
+import org.apache.rocketmq.client.exception.MQBrokerException;
+import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
+import org.apache.rocketmq.client.producer.MessageQueueSelector;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageQueue;
+import org.apache.rocketmq.remoting.exception.RemotingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,58 +19,58 @@ import java.util.List;
  * @email 17674641491@163.com
  */
 public class OrderProducer {
-    public static List<Order> getOrders() {
-        ArrayList<Order> list = new ArrayList<>();
+    //sl4j logger
+    private static final Logger logger = LoggerFactory.getLogger(OrderProducer.class);
 
-        Order order = new Order(1239, "订单未支付");
-        Order order111 = new Order(129, "订单未支付");
+    public static void main(String[] args) {
+        DefaultMQProducer defaultMQProducer = new DefaultMQProducer("order-pg");
 
-        Order order1 = new Order(1239, "订单已支付");
-        Order order11 = new Order(129, "订单已支付");
+        try {
+            defaultMQProducer.setNamesrvAddr("127.0.0.1:9876");
+            defaultMQProducer.setRetryTimesWhenSendAsyncFailed(3);
+            defaultMQProducer.setSendMsgTimeout(6_000);
+            defaultMQProducer.start();
 
-        Order order2 = new Order(1239, "订单已发货中");
-        Order order22 = new Order(129, "订单已发货中");
-
-        Order order3 = new Order(1239, "订单已发");
-        Order order33 = new Order(129, "订单已发");
-
-        list.add(order);
-        list.add(order111);
-
-        list.add(order1);
-        list.add(order11);
-
-        list.add(order2);
-        list.add(order22);
-
-        list.add(order3);
-        list.add(order33);
-        return list;
-    }
-
-    public static void main(String[] args) throws Exception {
-        DefaultMQProducer defaultMQProducer = new DefaultMQProducer("pg");
-        defaultMQProducer.setNamesrvAddr("127.0.0.1:9876");
-        defaultMQProducer.setRetryTimesWhenSendAsyncFailed(3);
-        defaultMQProducer.setSendMsgTimeout(6_000);
-        defaultMQProducer.start();
-
-        List<Order> orders = getOrders();
-        for (int i = 0; i < orders.size(); i++) {
-            Order order = orders.get(i);
-            Message message = new Message("order-tp", "tgf","key" + i, order.toString().getBytes(StandardCharsets.UTF_8));
-            defaultMQProducer.send(message, (List<MessageQueue> mqs, Message msg, Object arg) -> {
-                Integer orderId = (Integer) arg;
-                int size = mqs.size();
-                int index = orderId % size;
-                return mqs.get(index);
-            }, order.getOrderId());
-            //异步需要睡眠一下，不然还没发送完就 defaultMQProducer 生产者就关了
-            Thread.sleep(1_000);
+            //模拟10笔订单
+            for (int orderId = 0; orderId < 10; orderId++) {
+                //每笔订单发送3条消息，（1）创建订单（2）订单库存扣减（3）加积分
+                for (int i = 0; i < 3; i++) {
+                    String data = "";
+                    switch (i) {
+                        case 0:
+                            data = orderId + "号订单创建完成";
+                            break;
+                        case 1:
+                            data = orderId + "号订单库存扣减完成";
+                            break;
+                        case 2:
+                            data = orderId + "号订单加积分完成";
+                            break;
+                    }
+                    //创建消息对象
+                    Message message = new Message("order-topic", "order-tag", orderId + "", data.getBytes());
+                    //发送消息
+                    defaultMQProducer.send(message, new MessageQueueSelector() {
+                        //select方法的作用是选择发送到broker哪个队列
+                        @Override
+                        public MessageQueue select(List<MessageQueue> mqs, Message msg, Object arg) {
+                            //获取订单id
+                            Integer id = (Integer) arg;
+                            //根据订单id选择队列
+                            long index = id % mqs.size();
+                            MessageQueue messageQueue = mqs.get((int) index);
+                            logger.info("id:{},data:{},queue:{}", id, new String(msg.getBody()), messageQueue);
+                            return messageQueue;
+                        }
+                    }, orderId);
+                }
+            }
+        } catch (MQClientException | RemotingException | MQBrokerException | InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            //关闭生产者
+            defaultMQProducer.shutdown();
         }
-
-
-        defaultMQProducer.shutdown();
 
 
     }

@@ -6,6 +6,8 @@ import org.apache.rocketmq.client.consumer.listener.ConsumeOrderlyStatus;
 import org.apache.rocketmq.client.consumer.listener.MessageListenerOrderly;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.common.message.MessageExt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -16,22 +18,32 @@ import java.util.List;
  * @email 17674641491@163.com
  */
 public class OrderConsumer {
-    public static void main(String[] args) throws MQClientException {
-        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("pg");
-        consumer.setNamesrvAddr("127.0.0.1:9876");
+    //sl4j logger
+    private static final Logger logger = LoggerFactory.getLogger(OrderConsumer.class);
 
-        consumer.subscribe("order-tp", "*");
+    public static void main(String[] args) {
+        try {
+            DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("order-cg");
+            consumer.setNamesrvAddr("127.0.0.1:9876");
 
-        consumer.registerMessageListener(new MessageListenerOrderly() {
-            @Override
-            public ConsumeOrderlyStatus consumeMessage(List<MessageExt> msgs, ConsumeOrderlyContext context) {
-                for (MessageExt msg : msgs) {
-                    System.out.println("当前线程：" + Thread.currentThread().getName() + ",内容：" + new String(msg.getBody()));
+            consumer.subscribe("order-topic", "*");
+
+            //注册消息监听器，需要实现MessageListenerOrderly接口，用于实现有序消费
+            consumer.registerMessageListener(new MessageListenerOrderly() {
+                @Override
+                public ConsumeOrderlyStatus consumeMessage(List<MessageExt> msgs, ConsumeOrderlyContext context) {
+                    for (MessageExt msg : msgs) {
+                        logger.info("{},{},{}",msg.getKeys(),new String(msg.getBody()),context.getMessageQueue());
+                    }
+                    //确认消费成功
+                    return ConsumeOrderlyStatus.SUCCESS;
                 }
-                return ConsumeOrderlyStatus.SUCCESS;
-            }
-        });
-        consumer.start();
-        System.out.println("消费者启动");
+            });
+            consumer.start();
+        } catch (MQClientException e) {
+            throw new RuntimeException(e);
+        } finally {
+            logger.info("consumer start");
+        }
     }
 }

@@ -15,6 +15,7 @@
         <module>mq-common</module>
         <module>rocketmq-demo</module>
         <module>rocketmq-boot</module>
+        <module>msg-local-table</module>
     </modules>
 
     <dependencyManagement>
