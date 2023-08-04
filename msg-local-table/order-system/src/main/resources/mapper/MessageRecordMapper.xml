@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wl.order.mapper.MessageRecordMapper">
+
+    <resultMap id="BaseResultMap" type="com.wl.order.model.entity.MessageRecord">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="businessId" column="business_id" jdbcType="VARCHAR"/>
+            <result property="businessType" column="business_type" jdbcType="VARCHAR"/>
+            <result property="topic" column="topic" jdbcType="VARCHAR"/>
+            <result property="retriesNumber" column="retries_number" jdbcType="INTEGER"/>
+            <result property="msgStatus" column="msg_status" jdbcType="INTEGER"/>
+            <result property="msgText" column="msg_text" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,business_id,business_type,
+        retries_number,msg_status,msg_text,
+        create_time
+    </sql>
+    <insert id="insert">
+        insert into message_record (business_id, business_type, topic, msg_status, msg_text, create_time)
+        values (#{businessId}, #{businessType}, #{topic}, #{msgStatus}, #{msgText}, #{createTime});
+    </insert>
+    <update id="changeStatusByMessageId">
+        update message_record
+        set msg_status = #{newStatus}
+        where id = #{id}
+          and msg_status = #{oldStatus};
+    </update>
+    <update id="changeStatusByBusiness">
+        update message_record
+        set msg_status = #{newStatus}
+        where business_id = #{businessId}
+          and business_type = #{businessType}
+          and msg_status = #{oldStatus};
+    </update>
+    <update id="incReties">
+        update message_record
+        set retries_number = retries_number + 1
+        where id = #{messageId};
+    </update>
+    <select id="findByBusinessIdAndBusinessType" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from message_record
+        where business_id = #{businessId}
+        and business_type = #{businessType}
+    </select>
+    <select id="findAllByNoConsumer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from message_record
+        where msg_status  <![CDATA[<]]> 2 and create_time <![CDATA[<]]> #{startDate} and retries_number <![CDATA[<]]> #{reties} order by create_time asc
+    </select>
+</mapper>

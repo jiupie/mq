@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wl.order.mapper.OmsOrderMapper">
+
+    <resultMap id="BaseResultMap" type="com.wl.order.model.entity.OmsOrder">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="memberId" column="member_id" jdbcType="BIGINT"/>
+            <result property="totalAmount" column="total_amount" jdbcType="DECIMAL"/>
+            <result property="receiverName" column="receiver_name" jdbcType="VARCHAR"/>
+            <result property="receiverPhone" column="receiver_phone" jdbcType="VARCHAR"/>
+            <result property="receiverDetailAddress" column="receiver_detail_address" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,member_id,total_amount,
+        receiver_name,receiver_phone,receiver_detail_address
+    </sql>
+    <insert id="insert">
+        insert into oms_order (id, member_id, total_amount, receiver_name, receiver_phone, receiver_detail_address)
+        values (#{id}, #{memberId,jdbcType=BIGINT}, #{totalAmount,jdbcType=DECIMAL}, #{receiverName,jdbcType=VARCHAR},
+                #{receiverPhone,jdbcType=VARCHAR}, #{receiverDetailAddress,jdbcType=VARCHAR})
+    </insert>
+</mapper>
