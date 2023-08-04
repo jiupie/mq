@@ -22,5 +22,5 @@ public interface MessageRecordService {
     void changeStatusByBusiness(MessageRecordStatusDTO messageRecordStatusDTO);
 
 
-    List<MessageRecord> getAllNoConsumer(int reties, Date startDate);
+    List<MessageRecord> getAllNoConsumer(int reties, Date startDate, int numbers);
 }

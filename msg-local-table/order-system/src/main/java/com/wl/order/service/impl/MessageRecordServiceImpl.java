@@ -45,7 +45,7 @@ public class MessageRecordServiceImpl implements MessageRecordService {
     }
 
     @Override
-    public List<MessageRecord> getAllNoConsumer(int reties, Date startDate) {
-        return messageRecordMapper.findAllByNoConsumer(reties, startDate);
+    public List<MessageRecord> getAllNoConsumer(int reties, Date startDate, int numbers) {
+        return messageRecordMapper.findAllByNoConsumer(reties, startDate, numbers);
     }
 }

@@ -16,7 +16,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,business_id,business_type,
+        id,business_id,business_type,topic,
         retries_number,msg_status,msg_text,
         create_time
     </sql>
@@ -53,6 +53,7 @@
         select
         <include refid="Base_Column_List"/>
         from message_record
-        where msg_status  <![CDATA[<]]> 2 and create_time <![CDATA[<]]> #{startDate} and retries_number <![CDATA[<]]> #{reties} order by create_time asc
+        where msg_status  <![CDATA[<]]> 2 and create_time <![CDATA[<]]> #{startDate} and retries_number <![CDATA[<]]>
+        #{reties} order by create_time asc limit #{numbers};
     </select>
 </mapper>

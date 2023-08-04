@@ -23,7 +23,7 @@ public interface MessageRecordMapper {
 
     void changeStatusByBusiness(MessageRecordStatusDTO messageRecordStatusDTO);
 
-    List<MessageRecord> findAllByNoConsumer(@Param("reties") int reties,@Param("startDate") Date startDate);
+    List<MessageRecord> findAllByNoConsumer(@Param("reties") int reties,@Param("startDate") Date startDate,@Param("numbers") int numbers);
 
     void incReties(@Param("messageId") long messageId);
 }

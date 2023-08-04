@@ -33,12 +33,18 @@ public class MessageRecordTask {
 
     private final int MAX_RETIRES = 3;
 
-    @Scheduled(cron = "0 5 * * * ?")
+    @Scheduled(cron = "0/10 * * * * ?")
+//    @Scheduled(cron = "* 0/5 * * * ?")
     public void messageTask() {
-        List<MessageRecord> allNoConsumer = messageRecordService.getAllNoConsumer(MAX_RETIRES, DateUtils.addMinutes(new Date(), -4));
+        List<MessageRecord> allNoConsumer = messageRecordService.getAllNoConsumer(MAX_RETIRES, DateUtils.addMinutes(new Date(), -1),100);
         log.info("执行定时任务,需要重发消息数量：{}", allNoConsumer.size());
 
         for (MessageRecord messageRecord : allNoConsumer) {
+            if (messageRecord.getRetriesNumber() + 1 >= MAX_RETIRES) {
+                log.info("消息发送失败，达到最大重试次数，消息id：{}", messageRecord.getId());
+            }
+            messageRecordService.incReties(messageRecord.getId());
+
             rocketMQTemplate.asyncSend(messageRecord.getTopic(), JSON.parseObject(messageRecord.getMsgText(), OrderDTO.class), new SendCallback() {
                 @Override
                 public void onSuccess(SendResult sendResult) {
@@ -47,10 +53,7 @@ public class MessageRecordTask {
 
                 @Override
                 public void onException(Throwable e) {
-                    if (messageRecord.getRetriesNumber() + 1 >= MAX_RETIRES) {
-                        log.info("消息发送失败，达到最大重试次数，消息id：{}", messageRecord.getId());
-                    }
-                    messageRecordService.incReties(messageRecord.getId());
+
                 }
             });
         }
