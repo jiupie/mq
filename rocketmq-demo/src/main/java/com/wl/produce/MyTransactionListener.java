@@ -4,6 +4,8 @@ import org.apache.rocketmq.client.producer.LocalTransactionState;
 import org.apache.rocketmq.client.producer.TransactionListener;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageExt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author 南顾北衫
@@ -11,6 +13,9 @@ import org.apache.rocketmq.common.message.MessageExt;
  * @date 2022/3/20
  */
 public class MyTransactionListener implements TransactionListener {
+
+    private final Logger logger = LoggerFactory.getLogger(MyTransactionListener.class);
+
     /**
      * 执行本地事务
      * <p>
@@ -24,11 +29,16 @@ public class MyTransactionListener implements TransactionListener {
      */
     @Override
     public LocalTransactionState executeLocalTransaction(Message msg, Object arg) {
-        if ("tagA".equals(msg.getTags())) {
-            return LocalTransactionState.UNKNOW;
-        } else if ("tagB".equals(msg.getTags())) {
+        try {
+            logger.info("执行本地事务,订单号为:{}", msg.getKeys());
+
+            //插入订单表
+            //插入订单明细表
+            //提交事务
             return LocalTransactionState.COMMIT_MESSAGE;
-        } else {
+        } catch (Exception e) {
+            logger.error("执行本地事务异常,订单号为:{}", msg.getKeys());
+            //事务回滚
             return LocalTransactionState.ROLLBACK_MESSAGE;
         }
     }
@@ -41,7 +51,10 @@ public class MyTransactionListener implements TransactionListener {
      */
     @Override
     public LocalTransactionState checkLocalTransaction(MessageExt msg) {
-
-        return LocalTransactionState.UNKNOW;
+        logger.info("回查事务,订单号为:{}", msg.getKeys());
+        //根据订单号查询订单表
+        //如果订单表有数据，返回COMMIT_MESSAGE
+        //如果订单表没有数据，返回ROLLBACK_MESSAGE
+        return LocalTransactionState.COMMIT_MESSAGE;
     }
 }
