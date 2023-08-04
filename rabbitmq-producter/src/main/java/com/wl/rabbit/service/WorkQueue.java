@@ -1,6 +1,6 @@
 package com.wl.rabbit.service;
 
-import com.wl.domain.Order;
+import com.wl.mq.model.domain.Order;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;

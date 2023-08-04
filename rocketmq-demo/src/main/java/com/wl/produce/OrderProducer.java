@@ -1,9 +1,10 @@
 package com.wl.produce;
 
-import org.apache.rocketmq.client.exception.MQBrokerException;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.MessageQueueSelector;
+import org.apache.rocketmq.client.producer.SendCallback;
+import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageQueue;
 import org.apache.rocketmq.remoting.exception.RemotingException;
@@ -26,7 +27,7 @@ public class OrderProducer {
         DefaultMQProducer defaultMQProducer = new DefaultMQProducer("order-pg");
 
         try {
-            defaultMQProducer.setNamesrvAddr("127.0.0.1:9876");
+            defaultMQProducer.setNamesrvAddr("localhost:9876");
             defaultMQProducer.setRetryTimesWhenSendAsyncFailed(3);
             defaultMQProducer.setSendMsgTimeout(6_000);
             defaultMQProducer.start();
@@ -48,7 +49,7 @@ public class OrderProducer {
                             break;
                     }
                     //创建消息对象
-                    Message message = new Message("order-topic", "order-tag", orderId + "", data.getBytes());
+                    Message message = new Message("order-topic", "order-tag", String.valueOf(orderId), data.getBytes());
                     //发送消息
                     defaultMQProducer.send(message, new MessageQueueSelector() {
                         //select方法的作用是选择发送到broker哪个队列
@@ -62,10 +63,20 @@ public class OrderProducer {
                             logger.info("id:{},data:{},queue:{}", id, new String(msg.getBody()), messageQueue);
                             return messageQueue;
                         }
-                    }, orderId);
+                    }, orderId, new SendCallback() {
+                        @Override
+                        public void onSuccess(SendResult sendResult) {
+                            System.out.println(sendResult);
+                        }
+
+                        @Override
+                        public void onException(Throwable e) {
+                            System.out.println(e);
+                        }
+                    });
                 }
             }
-        } catch (MQClientException | RemotingException | MQBrokerException | InterruptedException e) {
+        } catch (MQClientException | RemotingException | InterruptedException e) {
             throw new RuntimeException(e);
         } finally {
             //关闭生产者

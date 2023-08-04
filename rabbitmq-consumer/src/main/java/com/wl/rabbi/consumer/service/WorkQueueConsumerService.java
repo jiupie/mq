@@ -1,7 +1,7 @@
 package com.wl.rabbi.consumer.service;
 
 import com.rabbitmq.client.Channel;
-import com.wl.domain.Order;
+import com.wl.mq.model.domain.Order;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.AmqpHeaders;

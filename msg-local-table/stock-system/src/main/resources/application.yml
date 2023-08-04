@@ -1,0 +1,13 @@
+rocketmq:
+  name-server: 192.168.5.125:9876
+  producer:
+    group: myprogoup
+
+spring:
+  datasource:
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/mq?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml

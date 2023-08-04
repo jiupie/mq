@@ -1,4 +1,4 @@
-package com.wl.domain;
+package com.wl.mq.model.domain;
 
 import lombok.Data;
 
@@ -12,6 +12,8 @@ import java.math.BigDecimal;
 @Data
 public class Order implements Serializable {
     private Long id;
+    private String name;
+    private String address;
+    private String phone;
     private BigDecimal money;
-    private Integer total;
 }

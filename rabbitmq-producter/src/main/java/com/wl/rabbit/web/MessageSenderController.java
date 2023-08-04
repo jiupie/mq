@@ -1,6 +1,7 @@
 package com.wl.rabbit.web;
 
-import com.wl.domain.Order;
+
+import com.wl.mq.model.domain.Order;
 import com.wl.rabbit.service.WorkQueue;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

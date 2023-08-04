@@ -33,7 +33,13 @@ public class OrderConsumer {
                 @Override
                 public ConsumeOrderlyStatus consumeMessage(List<MessageExt> msgs, ConsumeOrderlyContext context) {
                     for (MessageExt msg : msgs) {
-                        logger.info("{},{},{}",msg.getKeys(),new String(msg.getBody()),context.getMessageQueue());
+                        String keys = msg.getKeys();
+                        String s = new String(msg.getBody());
+                        if ("1".equals(keys) && "0号订单库存扣减完成".equals(s)) {
+                            int i=1/0;
+                        }
+
+                        logger.info("{},{},{}", keys, s, context.getMessageQueue());
                     }
                     //确认消费成功
                     return ConsumeOrderlyStatus.SUCCESS;
